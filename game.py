@@ -39,15 +39,20 @@ class  Game:
 
     def run(self):
         player = Player()
-        enemy = Enemy()  # 定义玩家对象
+        enemy = Enemy()
+        prop = Props()  # 定义玩家对象,道具
 
         enemies = pygame.sprite.Group()
         enemies.add(enemy)  # 定义敌人精灵组
 
+        props = pygame.sprite.Group()
+        props.add(prop)  # 定义道具精灵组
+
         all_sprites = pygame.sprite.Group()
         all_sprites.add(player)
-        all_sprites.add(enemy)  # 将所有精灵放到一个组中
-        pygame.mixer.Sound("background.wav").play(-1)   #游戏一开始音乐开始循环
+        all_sprites.add(enemy)
+        all_sprites.add(prop)  # 将所有精灵放到一个组中
+        pygame.mixer.Sound("background.wav").play(-1)  # 游戏一开始音乐开始循环
 
         while True:
 
@@ -65,9 +70,6 @@ class  Game:
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_p:  # 按P键暂停游戏
-                            paused = not paused
                 if pygame.sprite.spritecollideany(player, enemies):
                     pygame.mixer.Sound('crash.wav').play()      #撞击声
                     Constant.LIVES -= 1
@@ -87,6 +89,8 @@ class  Game:
                         player.rect.center = (160, 550)
                         enemy.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
                         Constant.SPEED = 5      #撞到之后新来的车辆减速
+                if pygame.sprite.spritecollideany(player, props):
+                    Constant.SCORE += 10
                 pygame.display.update()
                 self.clock.tick(Constant.FPS)
 
@@ -122,6 +126,21 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.top = 0
             self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
             self.image = pygame.image.load(random.choice(self.enemy_images))  # 重新随机加载一张图片
+
+class Props(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image =pygame.image.load("Score.png") # 星星
+        self.rect = self.image.get_rect()
+        self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
+
+    def move(self):
+        self.rect.move_ip(0, Constant.SPEED)
+        if self.rect.bottom > Constant.SCREEN_HEIGHT:
+            self.rect.top = 0
+            self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
+            self.image = pygame.image.load("Score.png")
+
 
 if __name__ == '__main__':
     game = Game()
