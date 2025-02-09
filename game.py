@@ -5,8 +5,6 @@ from pygame.locals import *
 import random
 import time
 
-
-
 class Constant: #全局变量类
     SCREEN_WIDTH = 400
     SCREEN_HEIGHT = 600   #设置窗口大小
@@ -23,8 +21,6 @@ class Constant: #全局变量类
     SPEED = 5
     SCORE = 0   #初始化速度，分数
 
-
-
 class  Game:
     def __init__(self):
 
@@ -36,9 +32,9 @@ class  Game:
 
         pygame.display.set_caption("躲避逆行")      #窗口名字
         self.screen = pygame.display.set_mode(size)    #渲染窗口
-        font_big = pygame.font.SysFont("微软雅黑", 60)
+        self.font_big = pygame.font.SysFont("Verdana", 60)
         self.font_small = pygame.font.SysFont("Verdana", 20)
-        self.game_over = font_big.render("出车祸啦！", True, Constant.BLACK)  # 设置字体
+        self.game_over = self.font_big.render("Damnnnn!", True, Constant.BLACK)  # 设置字体
         self.background = pygame.image.load("AnimatedStreet.png")     #加载背景
 
 
@@ -59,7 +55,7 @@ class  Game:
         while True:
 
             self.screen.blit(self.background, (0, 0))
-            scores = Constant.font_small.render(str(Constant.SCORE), True, Constant.BLACK)
+            scores = self.font_small.render(str(Constant.SCORE), True, Constant.BLACK)
             self.screen.blit(scores, (10, 10))
             for entity in all_sprites:      #对所有实体使用move方法移动，图像绘制
                 entity.move()
@@ -86,7 +82,6 @@ class  Game:
             pygame.display.update()
             self.clock.tick(Constant.FPS)
 
-
 class  Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -103,6 +98,7 @@ class  Player(pygame.sprite.Sprite):
         if self.rect.right < Constant.SCREEN_WIDTH:
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
+
 class  Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()      #调用父类的__init__方法初始化对象
@@ -113,9 +109,14 @@ class  Enemy(pygame.sprite.Sprite):
     def move(self):
         self.rect.move_ip(0, Constant.SPEED)
         if (self.rect.bottom > Constant.SCREEN_HEIGHT):
-            Constant.SPEED += 1
+            Constant.SCORE += 1
             self.rect.top = 0
             self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
+
+if __name__ == '__main__':
+    game = Game()
+    game.run()
+
 
 
 
