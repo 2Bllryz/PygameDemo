@@ -49,9 +49,8 @@ class  Game:
         all_sprites.add(enemy)  # 将所有精灵放到一个组中
         pygame.mixer.Sound("background.wav").play(-1)   #游戏一开始音乐开始循环
 
-        paused = False
         while True:
-            if not paused:
+
                 self.screen.blit(self.background, (0, 0))
                 scores = self.font_small.render(f"Score: {Constant.SCORE}", True, Constant.BLACK)
                 lives = self.font_small.render(f"Lives: {Constant.LIVES}", True, Constant.BLACK)
@@ -85,25 +84,18 @@ class  Game:
                         pygame.quit()
                         sys.exit()
                     else:
-                        player.rect.center = (160, 520)
+                        player.rect.center = (160, 550)
                         enemy.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
+                        Constant.SPEED = 5      #撞到之后新来的车辆减速
                 pygame.display.update()
                 self.clock.tick(Constant.FPS)
-            else:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_p:  # 按P键继续游戏
-                            paused = not paused
 
 class  Player(pygame.sprite.Sprite):
     def __init__(self):     #调用父类的__init__方法初始化对象
         super().__init__()
         self.image = pygame.image.load("Player.png")
         self.rect = self.image.get_rect()
-        self.rect.center = (160, 520)
+        self.rect.center = (160, 550)
 
     def move(self):
         pressed_keys = pygame.key.get_pressed()
@@ -115,17 +107,17 @@ class  Player(pygame.sprite.Sprite):
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
 
-class  Enemy(pygame.sprite.Sprite):
+class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        enemy_images = ["Enemy1.png", "Enemy2.png", "Enemy3.png", "Enemy4.png"]
-        self.image = pygame.image.load(random.choice(enemy_images))  # 随机加载一张图片
+        self.enemy_images = ["Enemy1.png", "Enemy2.png", "Enemy3.png", "Enemy4.png"]  # 敌人图片列表
+        self.image = pygame.image.load(random.choice(self.enemy_images))  # 随机加载一张图片
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40,Constant.SCREEN_WIDTH - 40), 0)
+        self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
 
     def move(self):
         self.rect.move_ip(0, Constant.SPEED)
-        if (self.rect.bottom > Constant.SCREEN_HEIGHT):
+        if self.rect.bottom > Constant.SCREEN_HEIGHT:
             Constant.SCORE += 1
             self.rect.top = 0
             self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
