@@ -78,7 +78,7 @@ class  Game:
                         self.screen.fill(Constant.RED)
                         self.screen.blit(self.game_over, (30, 250))     #显示游戏结束
                         scores = self.font_big.render(f"Score: {Constant.SCORE}", True, Constant.YELLOW)
-                        self.screen.blit(scores, (100, 350))
+                        self.screen.blit(scores, (30, 350))
                         pygame.display.update()         #刷新
                         for entity in all_sprites:
                             entity.kill()                #删除敌人
@@ -86,7 +86,7 @@ class  Game:
                         pygame.quit()
                         sys.exit()
                     else:
-                        player.rect.center = (160, 550)
+                        player.rect.center = (210, 550)
                         enemy.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
                         Constant.SPEED = 5      #撞到之后新来的车辆减速
                 if pygame.sprite.spritecollideany(player, props):
@@ -99,7 +99,7 @@ class  Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("Player.png")
         self.rect = self.image.get_rect()
-        self.rect.center = (160, 550)
+        self.rect.center = (210, 550)
 
     def move(self):
         pressed_keys = pygame.key.get_pressed()
