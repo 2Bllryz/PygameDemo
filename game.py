@@ -23,30 +23,71 @@ class Constant: #全局变量类
     SPEED = 5
     SCORE = 0   #初始化速度，分数
 
-    font_big = pygame.font.SysFont("微软雅黑", 60)
-    font_small = pygame.font.SysFont("Verdana", 20)
-    game_over = font_big.render("出车祸啦！", True, BLACK)   #设置字体
+
 
 class  Game:
     def __init__(self):
 
         pygame.init()
-        SPEED_UP= pygame.USEREVENT + 1
-        pygame.time.set_timer(SPEED_UP, 1000)
-        clock = pygame.time.Clock()
-        size = width,height = (Constant.SCREEN_WIDTH,Constant.SCREEN_HEIGHT)
+        self.SPEED_UP= pygame.USEREVENT + 1
+        pygame.time.set_timer(self.SPEED_UP, 1000)
+        self.clock = pygame.time.Clock()
+        size = width,height = (Constant.SCREEN_WIDTH,Constant.SCREEN_HEIGHT)    #窗口大小
 
         pygame.display.set_caption("躲避逆行")      #窗口名字
-        screen = pygame.display.set_mode(size)    #窗口大小
-        background = pygame.image.load("AnimatedStreet.png")     #加载背景
-        pass
+        self.screen = pygame.display.set_mode(size)    #渲染窗口
+        font_big = pygame.font.SysFont("微软雅黑", 60)
+        self.font_small = pygame.font.SysFont("Verdana", 20)
+        self.game_over = font_big.render("出车祸啦！", True, Constant.BLACK)  # 设置字体
+        self.background = pygame.image.load("AnimatedStreet.png")     #加载背景
+
+
+
+
+
     def run(self):
+        player = Player()
+        enemy = Enemy()  # 定义玩家对象
+
+        enemies = pygame.sprite.Group()
+        enemies.add(enemy)  # 定义敌人精灵组
+
+        all_sprites = pygame.sprite.Group()
+        all_sprites.add(player)
+        all_sprites.add(enemy)  # 将所有精灵放到一个组中
         pygame.mixer.Sound("background.wav").play(-1)   #游戏一开始音乐开始循环
         while True:
-            screen.blit(background, (0, 0))
+
+            self.screen.blit(self.background, (0, 0))
             scores = Constant.font_small.render(str(Constant.SCORE), True, Constant.BLACK)
-            screen.blit(scores, (10, 10))
-class  Player:
+            self.screen.blit(scores, (10, 10))
+            for entity in all_sprites:      #对所有实体使用move方法移动，图像绘制
+                entity.move()
+                self.screen.blit(entity.image, entity.rect)
+            for event in pygame.event.get():
+                if event.type == self.SPEED_UP:
+                    Constant.SPEED+=0.5
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            if pygame.sprite.spritecollideany(player, enemies):
+                pygame.mixer.Sound('crash.wav').play()      #撞击声
+                time.sleep(1)   #背景音乐延迟一秒
+
+                self.screen.fill(Constant.RED)
+                self.screen.blit(self.game_over, (30, 250))     #显示游戏结束
+
+                pygame.display.update()         #刷新
+                for entity in all_sprites:
+                    entity.kill()                #删除敌人
+                time.sleep(2)
+                pygame.quit()
+                sys.exit()
+            pygame.display.update()
+            self.clock.tick(Constant.FPS)
+
+
+class  Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Player.png")
@@ -76,8 +117,6 @@ class  Enemy(pygame.sprite.Sprite):
             self.rect.top = 0
             self.rect.center = (random.randint(40, Constant.SCREEN_WIDTH - 40), 0)
 
-clock = pygame.time.Clock()
-pygame.init()
 
 
 
