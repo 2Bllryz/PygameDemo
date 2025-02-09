@@ -72,7 +72,8 @@ class  Game:
 
                 self.screen.fill(Constant.RED)
                 self.screen.blit(self.game_over, (30, 250))     #显示游戏结束
-
+                scores = self.font_big.render(str(Constant.SCORE), True, Constant.YELLOW)
+                self.screen.blit(scores, (165, 350))
                 pygame.display.update()         #刷新
                 for entity in all_sprites:
                     entity.kill()                #删除敌人
